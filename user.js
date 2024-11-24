@@ -227,7 +227,7 @@ app.put("/user/addeditor/:username",async (req,res)=>{
 app.get('/user/getprofile/:userId', async (req, res) => {
     const userId = req.params.userId
     try {
-        const user = await Users.findById(userId, {username:1,email:1,fullname:1,about: 1, location: 1, profilePic: 1, services: 1, profileTags: 1, avgRating: 1, education: 1, achievements: 1, email: 1,createdAt: 1 ,avgResponseTime:1,skills:1,role:1,banned:1,reasonOfban:1})
+        const user = await UsersSchema.findById(userId, {username:1,email:1,fullname:1,about: 1, location: 1, profilePic: 1, services: 1, profileTags: 1, avgRating: 1, education: 1, achievements: 1, email: 1,createdAt: 1 ,avgResponseTime:1,skills:1,role:1,banned:1,reasonOfban:1})
 
         if (!user) {
             return res.status(404).json({ msg: "user not found" })
@@ -247,7 +247,7 @@ app.get('/user/getprofile/:userId', async (req, res) => {
 app.get("/user/getcontact/:id", async (req, res) => {
     const id = req.params.id
     try {
-        const user = await Users.findById(id, {
+        const user = await UsersSchema.findById(id, {
             phone: 1,
             socials: 1,
             personalSite: 1,
@@ -274,7 +274,7 @@ app.get("/user/getcontact/:id", async (req, res) => {
 app.get("/user/getworkhistory/:id", async (req, res) => {
     const id = req.params.id
     try {
-        const user = await Users.findById(id, {
+        const user = await UsersSchema.findById(id, {
             workHistory: 1,
         });
 
