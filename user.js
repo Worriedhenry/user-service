@@ -123,7 +123,7 @@ app.get("/user/getprofiletags/:id", async (req, res) => {
     }
     catch(err){
         return res.status(403).send("invalid token")
-    }
+    } 
 })
 
 app.put("/user/updateprofiletags/:id", async (req, res) => {
@@ -137,7 +137,92 @@ app.put("/user/updateprofiletags/:id", async (req, res) => {
     }
 })
 
+app.put("/user/banuser/:userId/:adminId", async (req, res) => {
+    const { userId, adminId } = req.params;
+    try {
+        const reasonOfban=req.body.reasonOfBan;
 
+        const user = await UsersSchema.updateOne(
+            { _id: userId },
+            { $set: { banned: true, bannedByAdmin: adminId,reasonOfban:reasonOfban } }
+        );
+        return res.status(204).send("ok");
+    }
+    catch (err) {
+        return res.status(403).send("invalid token");
+    }
+});
+
+app.put("/user/removeban/:userId",async (req,res)=>{
+    const {userId} =req.params;
+    try{
+        const user=await UsersSchema.updateOne(
+            {_id:userId},
+            {$set:{banned:false,reasonOfban:""}}
+        )
+        res.status(204).send("Ban Removed")
+    }
+    catch(err){
+        return res.status(403).send("invalid token")
+    }
+})
+app.get("/user/getbannedusers",async (req,res)=>{
+    try{
+        const bannedUsers=await UsersSchema.find({banned:true}).populate({
+            path:"bannedByAdmin",
+            select:"username",
+            model:"Users"
+        })
+        res.status(200).send(bannedUsers)
+    }
+    catch(err){
+        console.log(err)
+        return res.status(403).send("invalid token")
+    }
+})
+app.get("/user/geteditors",async (req,res)=>{
+    try{
+        const editors=await UsersSchema.find({role:"editor"})
+        res.status(200).send(editors)
+    }
+    catch(err){
+        return res.status(403).send("invalid token")
+    }
+})
+
+app.put("/user/removeeditor/:editorId",async (req,res)=>{
+    const {editorId}=req.params;
+    try{
+        const editor=await UsersSchema.updateOne(
+            {_id:editorId},
+            {$set:{role:"user"}}
+        )
+        res.status(204).send("Editor Removed")
+    }
+    catch(err){
+        return res.status(403).send("invalid token")
+    }
+})
+
+app.put("/user/addeditor/:username",async (req,res)=>{
+    const {username}=req.params;
+    try{
+        console.log(username)
+        const user=await UsersSchema.findOne({username});
+        if(!user || user.role!="user"){
+            return res.status(200).send("User not found")
+        }
+        const editor=await UsersSchema.updateOne(
+            {_id:user._id},
+            {$set:{role:"editor"}}
+        )
+        res.status(204).send("Editor Added")
+    }
+    catch(err){
+        console.log(err);
+        return res.status(403).send("invalid token")
+    }
+})
 
 
 module.exports = app;

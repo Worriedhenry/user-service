@@ -62,7 +62,20 @@ const serviceSchema = new Schema({
     serviceCompleted:{
         type:Number,
         default: 0
+    },
+    unlist:{
+        type:Boolean, 
+        default:false
+    },
+    admin:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    },
+    reasonOfUnlist:{
+        type:String,
+        default:""
     }
+
     });
 
 serviceSchema.index({ serviceName: 'text', serviceTags: 'text',serviceBrief: 'text' });
